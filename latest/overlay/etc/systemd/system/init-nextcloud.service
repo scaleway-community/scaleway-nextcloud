@@ -1,0 +1,10 @@
+[Unit]
+Description=initialize NextCloud on first boot
+After=mysql.service
+
+[Service]
+ExecStart=/usr/local/sbin/scw-init-nextcloud
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

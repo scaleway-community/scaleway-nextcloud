@@ -1,0 +1,9 @@
+# Nextcloud configuration
+
+In order to configure your nextcloud, you'll need some infos about the database:
+Database user: nextcloud
+Database name: nextcloud_db
+Databse password: <database-passwd>
+
+Go to http://<your-ip>/nextcloud, fill those infos and enter your desired user
+and password.

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+check_mysql()
+{
+  mysqladmin ping
+}
+
+USER_PASSWORD=$(head /dev/urandom -c 512 | sha1sum | awk '// { print $1; }')
+PUBLIC_IP=$(scw-metadata --cached PUBLIC_IP_ADDRESS)
+
+
+while !(check_mysql)
+do
+  sleep 3
+done
+
+mysql -e "CREATE DATABASE nextcloud_db;
+          CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY '${USER_PASSWORD}';
+          GRANT ALL PRIVILEGES ON nextcloud_db.* TO 'nextcloud'@'localhost';
+          FLUSH PRIVILEGES;"
+
+# Add infos for user
+sed -i "s/<database-passwd>/$USER_PASSWORD/" /usr/share/doc/scaleway/nextcloud/README
+sed -i "s/<your-ip>/$PUBLIC_IP/" /usr/share/doc/scaleway/nextcloud/README
+
+# Give access to webserver
+chown -R www-data:www-data /var/www/html/nextcloud
+chown -R root:www-data /var/lib/php/
+chown root:www-data /var/www/html/nextcloud/.htaccess
+chown root:www-data /var/www/html/nextcloud/data/.htaccess
+find /var/www/html/nextcloud/ -type d -exec chmod 755 {} +
+find /var/www/hmtl/nextcloud/ -type f -exec chmod 644 {} +
+
+# Disable the service that ran this script, only need it once
+systemctl disable init-nextcloud
