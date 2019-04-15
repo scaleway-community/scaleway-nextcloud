@@ -11,7 +11,7 @@ RUN /usr/local/sbin/builder-enter
 # Install packages
 RUN apt-get update && apt-get install apt-transport-https \
   && apt-get -q update \
-  && apt-get -y -q upgrade \
+  && apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew upgrade \
   && apt-get install -y -q \
      libffi-dev \
      libssl-dev \
